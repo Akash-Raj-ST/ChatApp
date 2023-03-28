@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:bloc/bloc.dart';
 import 'package:chatapp/Auth/auth.dart';
 import 'package:chatapp/service/authentication.dart';
@@ -14,8 +15,15 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
 
   AuthenticationBloc(this._authenticationService) : super(AuthenticationInitial()) {
 
-    on<AuthenticationInit>((event,emit){
-      _authenticationService.init();
+    on<AuthenticationInit>((event,emit) async{
+      await _authenticationService.init();
+
+      bool isSignedIn = await _authenticationService.isUserSignedIn();
+
+      if(isSignedIn){
+        AuthUser currUser= await _authenticationService.getCurrentUser();
+        emit(AuthenticationSuccessfulState(user: currUser));
+      }
     }
     );
     
@@ -28,7 +36,8 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
         print("error result is null");
       }else{
         print("Login success redirecting...");
-        emit(const AuthenticationSuccessfulState(userID: 1));
+        AuthUser currUser= await _authenticationService.getCurrentUser();
+        emit(AuthenticationSuccessfulState(user: currUser));
       }
     }
     );
@@ -52,6 +61,18 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
           print("OTP success");
         }else{
           print("Register Error OTP faield!!!");
+        }
+    });
+    
+    on<SignOut>((event,emit) async{
+        bool result = await _authenticationService.signOutCurrentUser();
+
+        if(result){
+          emit(SignOutSuccessState());
+          print("SignOut Success");
+        }else{
+          print("SignOut faield!!!");
+          emit(SignOutFailedState());
         }
     });
 

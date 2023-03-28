@@ -15,10 +15,10 @@ class AuthenticationInitial extends AuthenticationState {
 
 class AuthenticationSuccessfulState extends AuthenticationState {
 
-  final int userID;
+  final AuthUser user;
 
   const AuthenticationSuccessfulState({
-    required this.userID,
+    required this.user,
   });
 
   @override
@@ -32,6 +32,18 @@ class OTPInputState extends AuthenticationState{
 
 
 class RegisterSuccessState extends AuthenticationState {
+
+  @override
+  List<Object> get props => [];
+}
+
+class SignOutSuccessState extends AuthenticationState {
+
+  @override
+  List<Object> get props => [];
+}
+
+class SignOutFailedState extends AuthenticationState {
 
   @override
   List<Object> get props => [];

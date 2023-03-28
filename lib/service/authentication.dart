@@ -4,7 +4,7 @@ import '../amplifyconfiguration.dart';
 
 class AuthenticationService{
 
-  void init() async{
+  Future init() async{
     try {
       final auth = AmplifyAuthCognito();
       await Amplify.addPlugin(auth);
@@ -63,6 +63,26 @@ class AuthenticationService{
 
     } on AuthException catch (e) {
       safePrint(e.message);
+    }
+  }
+
+  Future<bool> isUserSignedIn() async {
+    final result = await Amplify.Auth.fetchAuthSession();
+    return result.isSignedIn;
+  }
+
+  Future<AuthUser> getCurrentUser() async {
+    final user = await Amplify.Auth.getCurrentUser();
+    return user;
+  }
+
+  Future signOutCurrentUser() async {
+    try {
+      await Amplify.Auth.signOut();
+      return true;
+    } on AuthException catch (e) {
+      print(e.message);
+      return false;
     }
   }
 }

@@ -29,8 +29,16 @@ class Authentication extends StatelessWidget {
         },
         builder:(context, state){
           if(state is AuthenticationSuccessfulState){ 
-            Navigator.of(context).push(
-              MaterialPageRoute(builder:(context)=>HomePage(userID: state.userID,))
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder:(_)=>BlocProvider.value(
+                      value: BlocProvider.of<AuthenticationBloc>(context),
+                      child: HomePage(user: state.user),
+                    )
+                  )
+              );
+            }
             );
           }
 
