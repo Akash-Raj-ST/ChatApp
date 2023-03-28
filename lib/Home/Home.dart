@@ -1,0 +1,53 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:chatapp/Auth/auth.dart';
+import 'package:chatapp/Auth/bloc/authentication_bloc.dart';
+import 'package:flutter/src/widgets/container.dart';
+import 'package:flutter/src/widgets/framework.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class HomePage extends StatelessWidget {
+
+  final AuthUser user;
+
+  const HomePage({super.key, required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return
+      BlocConsumer<AuthenticationBloc,AuthenticationState>(
+
+        listener: (context, state) {
+
+          if(state is SignOutSuccessState){
+            print("Signing out!!!");
+            Future.delayed(Duration.zero,(){
+              Navigator.pop(context);
+            });
+              
+          }
+          
+        },
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text("Welcome ${user.username}!"),
+              automaticallyImplyLeading: false,
+              actions:<Widget> [
+                IconButton(
+                  onPressed: (){
+                    BlocProvider.of<AuthenticationBloc>(context).add(SignOut());
+                  }, 
+                  icon: const Icon(Icons.logout),
+                )
+              ],
+            ),
+            body: const Center(
+              child: Text("Welcome"),
+            ),
+          );
+        },
+      );
+  }
+}
