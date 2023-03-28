@@ -1,6 +1,8 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:chatapp/Auth/auth.dart';
 import 'package:chatapp/Auth/bloc/authentication_bloc.dart';
+import 'package:chatapp/Home/Contacts.dart';
+import 'package:chatapp/Home/SearchBar.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
@@ -43,8 +45,18 @@ class HomePage extends StatelessWidget {
                 )
               ],
             ),
-            body: const Center(
-              child: Text("Welcome"),
+            body: Column(
+              children: [
+                SearchBar(),
+
+                SizedBox(
+                  height: 20,
+                ),
+                
+                Expanded(
+                  child: Contacts()
+                )
+              ]
             ),
           );
         },
