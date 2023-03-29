@@ -56,7 +56,7 @@ class OTPEvent extends AuthenticationEvent {
   List<Object> get props => [];
 }
 
-class SignOut extends AuthenticationEvent{
+class SignOutEvent extends AuthenticationEvent{
   @override
   List<Object> get props => [];
 }

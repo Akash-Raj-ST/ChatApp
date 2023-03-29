@@ -64,7 +64,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
         }
     });
     
-    on<SignOut>((event,emit) async{
+    on<SignOutEvent>((event,emit) async{
         bool result = await _authenticationService.signOutCurrentUser();
 
         if(result){
