@@ -5,7 +5,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 import '../models/Contact.dart';
-import 'Chat.dart';
+import '../Chat/Chat.dart';
 
 class Contacts extends StatelessWidget {
   Contacts({super.key});
@@ -39,30 +39,28 @@ class ContactItem extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute<void>(
               builder: (BuildContext context) {
-                return Chat(contact:contact);
+                return Chat(contact:contact,id:index);
               }
             ));
         },
-        child: Card(
-          child: ListTile(
-            leading: Hero(
-              tag: index,
-              child: CircleAvatar(
-                          backgroundImage: NetworkImage("https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"),
-                        ),
-            ),
+        child: ListTile(
+          leading: Hero(
+            tag: index,
+            child: CircleAvatar(
+                        backgroundImage: NetworkImage("https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"),
+                      ),
+          ),
       
-            title: Text(
-              contact.name,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+          title: Text(
+            contact.name,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
             ),
-            subtitle: Text(
-              contact.status==0?"Offline":"Online",
-              style: TextStyle(
-                color:contact.status==0?Colors.red[200]:Colors.green[200],
-              ),
+          ),
+          subtitle: Text(
+            contact.status==0?"Offline":"Online",
+            style: TextStyle(
+              color:contact.status==0?Colors.red[200]:Colors.green[200],
             ),
           ),
         ),

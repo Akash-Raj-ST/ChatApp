@@ -3,6 +3,7 @@ import 'package:chatapp/Auth/auth.dart';
 import 'package:chatapp/Auth/bloc/authentication_bloc.dart';
 import 'package:chatapp/Home/Contacts.dart';
 import 'package:chatapp/Home/SearchBar.dart';
+import 'package:chatapp/Profile/Profile.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
@@ -25,7 +26,7 @@ class HomePage extends StatelessWidget {
           if(state is SignOutSuccessState){
             print("Signing out!!!");
             Future.delayed(Duration.zero,(){
-              Navigator.pop(context);
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => Authentication()), (route) => false);
             });
               
           }
@@ -34,16 +35,30 @@ class HomePage extends StatelessWidget {
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
-              title: Text("Welcome ${user.username}!"),
+              title: Text("ChitChat ${user.username}!"),
               automaticallyImplyLeading: false,
               actions:<Widget> [
-                IconButton(
-                  onPressed: (){
-                    BlocProvider.of<AuthenticationBloc>(context).add(SignOut());
-                  }, 
-                  icon: const Icon(Icons.logout),
-                )
+                GestureDetector(
+                  onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder:(_)=>BlocProvider.value(
+                              value: BlocProvider.of<AuthenticationBloc>(context),
+                              child: Profile(user: user),
+                          )
+                        )
+                      );
+                  
+                  },
+                  child: Hero(
+                    tag: "ProfilePic",
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage("https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")
+                    ),
+                  ),
+                ),
               ],
+            
             ),
             body: Column(
               children: [
