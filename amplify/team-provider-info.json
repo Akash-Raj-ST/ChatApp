@@ -14,6 +14,12 @@
     "categories": {
       "auth": {
         "chatApp": {}
+      },
+      "function": {
+        "DP": {}
+      },
+      "storage": {
+        "s3chatappstoragebf25c17b": {}
       }
     }
   }

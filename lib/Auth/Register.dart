@@ -2,6 +2,7 @@ import 'package:chatapp/Auth/bloc/authentication_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../components/CustomTextField.dart';
 import '../components/submitButton.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -34,7 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
     print("Verifying OTP ${_OTPController.text}");
 
     BlocProvider.of<AuthenticationBloc>(context).add(
-      OTPEvent(username: _usernameController.text, OTP: _OTPController.text)
+      OTPEvent(username: _usernameController.text, OTP: _OTPController.text,email:_emailController.text)
     );
   }
   
@@ -48,14 +49,17 @@ class _RegisterPageState extends State<RegisterPage> {
         
         return Column(
           children: [
-            TextField(
+            CustomTextField(
               controller: _emailController,
+              label: "Email"
             ),
-            TextField(
+            CustomTextField(
               controller: _usernameController,
+              label: "Username"
             ),
-            TextField(
+            CustomTextField(
               controller: _passwordController,
+              label: "Password",
               obscureText: true,
             ),
       
@@ -64,8 +68,9 @@ class _RegisterPageState extends State<RegisterPage> {
             state is OTPInputState?
             Column(
                 children: [
-                  TextField(
+                  CustomTextField(
                     controller: _OTPController,
+                    label: "OTP"
                   ),
                   SubmitButton("Verify", verifyOTP),
                 ],

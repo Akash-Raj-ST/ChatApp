@@ -6,6 +6,8 @@ import 'package:chatapp/Auth/auth.dart';
 import 'package:chatapp/service/authentication.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../models/User.dart';
+
 part 'authentication_event.dart';
 part 'authentication_state.dart';
 
@@ -22,7 +24,9 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
 
       if(isSignedIn){
         AuthUser currUser= await _authenticationService.getCurrentUser();
-        emit(AuthenticationSuccessfulState(user: currUser));
+        User user = await _authenticationService.getUser(currUser.username);
+        
+        emit(AuthenticationSuccessfulState(user: user));
       }
     }
     );
@@ -36,7 +40,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
         print("error result is null");
       }else{
         print("Login success redirecting...");
-        AuthUser currUser= await _authenticationService.getCurrentUser();
+        User currUser= await _authenticationService.getUser(event.username);
         emit(AuthenticationSuccessfulState(user: currUser));
       }
     }
@@ -54,7 +58,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     );
 
     on<OTPEvent>((event,emit) async{
-        bool result = await _authenticationService.OTPVerify(event.username,event.OTP);
+        bool result = await _authenticationService.OTPVerify(event.username,event.OTP,event.email);
 
         if(result){
           emit(RegisterSuccessState());

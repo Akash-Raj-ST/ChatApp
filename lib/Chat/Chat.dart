@@ -1,11 +1,15 @@
-import 'package:chatapp/models/Contact.dart';
-import 'package:chatapp/models/Message.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
+import 'package:chatapp/models/Contact.dart';
+import 'package:chatapp/models/Message.dart';
+
+import '../service/contact.dart';
+
 class Chat extends StatelessWidget {
-  final Contact contact;
+  final ContactDetail contact;
   final int id;
 
   const Chat({required this.contact,required this.id,super.key});
@@ -16,7 +20,7 @@ class Chat extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(contact.name),
+        title: Text(contact.user.username),
         leading: Hero(
           tag: id,
           child: Padding(
@@ -32,7 +36,9 @@ class Chat extends StatelessWidget {
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
       
-          Expanded(child: DisplayChat()),
+          Expanded(
+            child: DisplayChat(messages:contact.contact.messages??<Message>[])
+          ),
       
           SizedBox(
             height: 2,
@@ -47,25 +53,35 @@ class Chat extends StatelessWidget {
 
 
 class DisplayChat extends StatelessWidget {
-  DisplayChat({super.key});
 
-   List<Message> messages = [
-      Message(message: "1 hi... How are you???", isUser: true, createdAt: DateTime.now()),
-      Message(message: "2 I am Fine.", isUser: false, createdAt: DateTime.now()),
-      Message(message: "3 What about you?", isUser: false, createdAt: DateTime.now()),
-      Message(message: "4 I am fine too. What happened at MG auditorium during Orientation", isUser: true, createdAt: DateTime.now()),
-      Message(message: "5 hi... How are you???", isUser: true, createdAt: DateTime.now()),
-      Message(message: "6 I am Fine.", isUser: false, createdAt: DateTime.now()),
-      Message(message: "7 What about you?", isUser: false, createdAt: DateTime.now()),
-      Message(message: "8 I am fine too. What happened at MG auditorium during Orientation", isUser: true, createdAt: DateTime.now()),
-      Message(message: "9 hi... How are you???", isUser: true, createdAt: DateTime.now()),
-      Message(message: "10 I am Fine.", isUser: false, createdAt: DateTime.now()),
-      Message(message: "11 What about you?", isUser: false, createdAt: DateTime.now()),
-      Message(message: "12 I am fine too. What happened at MG auditorium during Orientation", isUser: true, createdAt: DateTime.now()),
-    ];
+  final List<Message> messages;
+
+  DisplayChat({
+    Key? key,
+    required this.messages,
+  }) : super(key: key);
+
+  //  List<Message> messages = [
+  //     Message(message: "1 hi... How are you???", isUser: true, createdAt: DateTime.now()),
+  //     Message(message: "2 I am Fine.", isUser: false, createdAt: DateTime.now()),
+  //     Message(message: "3 What about you?", isUser: false, createdAt: DateTime.now()),
+  //     Message(message: "4 I am fine too. What happened at MG auditorium during Orientation", isUser: true, createdAt: DateTime.now()),
+  //     Message(message: "5 hi... How are you???", isUser: true, createdAt: DateTime.now()),
+  //     Message(message: "6 I am Fine.", isUser: false, createdAt: DateTime.now()),
+  //     Message(message: "7 What about you?", isUser: false, createdAt: DateTime.now()),
+  //     Message(message: "8 I am fine too. What happened at MG auditorium during Orientation", isUser: true, createdAt: DateTime.now()),
+  //     Message(message: "9 hi... How are you???", isUser: true, createdAt: DateTime.now()),
+  //     Message(message: "10 I am Fine.", isUser: false, createdAt: DateTime.now()),
+  //     Message(message: "11 What about you?", isUser: false, createdAt: DateTime.now()),
+  //     Message(message: "12 I am fine too. What happened at MG auditorium during Orientation", isUser: true, createdAt: DateTime.now()),
+  //   ];
+
+
 
   @override
   Widget build(BuildContext context) {
+
+
     return Padding(
       padding: const EdgeInsets.only(bottom:2.0),
       child: ListView.builder(
@@ -76,11 +92,11 @@ class DisplayChat extends StatelessWidget {
           return Container(
             padding: EdgeInsets.only(left: 14,right: 14,top: 10,bottom: 10),
             child: Align(
-              alignment: (messages[messages.length-(1+index)].isUser?Alignment.topRight:Alignment.topLeft),
+              alignment: (messages[messages.length-(1+index)].sender?Alignment.topRight:Alignment.topLeft),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: (messages[messages.length-(1+index)].isUser?Colors.blue[200]:Colors.grey.shade200),
+                  color: (messages[messages.length-(1+index)].sender?Colors.blue[200]:Colors.grey.shade200),
                 ),
                 padding: EdgeInsets.all(16),
                 child: Text(messages[messages.length-(1+index)].message, style: TextStyle(fontSize: 15),),
@@ -90,6 +106,7 @@ class DisplayChat extends StatelessWidget {
         }
       ),
     );
+
   }
 }
 

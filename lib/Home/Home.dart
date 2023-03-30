@@ -10,9 +10,11 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../models/User.dart';
+
 class HomePage extends StatelessWidget {
 
-  final AuthUser user;
+  final User user;
 
   const HomePage({super.key, required this.user});
 
@@ -69,10 +71,11 @@ class HomePage extends StatelessWidget {
                 ),
                 
                 Expanded(
-                  child: Contacts()
+                  child: Contacts(user:user)
                 )
               ]
             ),
+
           );
         },
       );

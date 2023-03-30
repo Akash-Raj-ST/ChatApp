@@ -7,6 +7,8 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../components/CustomTextField.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,11 +30,13 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextField(
+        CustomTextField(
           controller: _usernameController,
+          label:"Username",
         ),
-        TextField(
+        CustomTextField(
           controller: _passwordController,
+          label:"Password",
           obscureText: true,
         ),
 
