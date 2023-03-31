@@ -8,21 +8,53 @@ import 'package:chatapp/models/Message.dart';
 
 import '../service/contact.dart';
 
-class Chat extends StatelessWidget {
+class LocalMessage {
+  final String message;
+  final bool mine;
+  final DateTime time;
+
+  LocalMessage({
+    required this.message,
+    required this.mine,
+    required this.time,
+  });
+}
+
+class Chat extends StatefulWidget {
   final ContactDetail contact;
   final int id;
 
-  const Chat({required this.contact,required this.id,super.key});
+  Chat({required this.contact,required this.id,super.key});
 
+  @override
+  State<Chat> createState() => _ChatState();
+}
+
+class _ChatState extends State<Chat> {
+  List<LocalMessage> messages = [];
+
+  @override
+  initState(){
+    messages.add(LocalMessage(message: "Hi How are You?", mine: true, time: DateTime.now()));
+    messages.add(LocalMessage(message: "I am fine what about you?", mine: false, time: DateTime.now()));
+    messages.add(LocalMessage(message: "I am fine too", mine: true, time: DateTime.now()));
+    messages.add(LocalMessage(message: "What do we have to do for MGT J component????", mine: false, time: DateTime.now()));
+  }
+
+  void sendMessage(String message){
+    setState((){    
+     messages.add(LocalMessage(message: message, mine: true, time: DateTime.now()));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(contact.user.username),
+        title: Text(widget.contact.user.username),
         leading: Hero(
-          tag: id,
+          tag: widget.id,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
@@ -37,14 +69,14 @@ class Chat extends StatelessWidget {
         children: [
       
           Expanded(
-            child: DisplayChat(messages:contact.contact.messages??<Message>[])
+            child: DisplayChat(messages:messages)
           ),
       
           SizedBox(
             height: 2,
           ),
       
-          MessageField(),
+          MessageField(sendMessage:sendMessage),
         ],
       ),
     );
@@ -54,33 +86,15 @@ class Chat extends StatelessWidget {
 
 class DisplayChat extends StatelessWidget {
 
-  final List<Message> messages;
+  final List<LocalMessage> messages;
 
   DisplayChat({
     Key? key,
     required this.messages,
   }) : super(key: key);
 
-  //  List<Message> messages = [
-  //     Message(message: "1 hi... How are you???", isUser: true, createdAt: DateTime.now()),
-  //     Message(message: "2 I am Fine.", isUser: false, createdAt: DateTime.now()),
-  //     Message(message: "3 What about you?", isUser: false, createdAt: DateTime.now()),
-  //     Message(message: "4 I am fine too. What happened at MG auditorium during Orientation", isUser: true, createdAt: DateTime.now()),
-  //     Message(message: "5 hi... How are you???", isUser: true, createdAt: DateTime.now()),
-  //     Message(message: "6 I am Fine.", isUser: false, createdAt: DateTime.now()),
-  //     Message(message: "7 What about you?", isUser: false, createdAt: DateTime.now()),
-  //     Message(message: "8 I am fine too. What happened at MG auditorium during Orientation", isUser: true, createdAt: DateTime.now()),
-  //     Message(message: "9 hi... How are you???", isUser: true, createdAt: DateTime.now()),
-  //     Message(message: "10 I am Fine.", isUser: false, createdAt: DateTime.now()),
-  //     Message(message: "11 What about you?", isUser: false, createdAt: DateTime.now()),
-  //     Message(message: "12 I am fine too. What happened at MG auditorium during Orientation", isUser: true, createdAt: DateTime.now()),
-  //   ];
-
-
-
   @override
   Widget build(BuildContext context) {
-
 
     return Padding(
       padding: const EdgeInsets.only(bottom:2.0),
@@ -92,11 +106,11 @@ class DisplayChat extends StatelessWidget {
           return Container(
             padding: EdgeInsets.only(left: 14,right: 14,top: 10,bottom: 10),
             child: Align(
-              alignment: (messages[messages.length-(1+index)].sender?Alignment.topRight:Alignment.topLeft),
+              alignment: (messages[messages.length-(1+index)].mine?Alignment.topRight:Alignment.topLeft),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: (messages[messages.length-(1+index)].sender?Colors.blue[200]:Colors.grey.shade200),
+                  color: (messages[messages.length-(1+index)].mine?Colors.blue[200]:Colors.grey.shade200),
                 ),
                 padding: EdgeInsets.all(16),
                 child: Text(messages[messages.length-(1+index)].message, style: TextStyle(fontSize: 15),),
@@ -112,13 +126,16 @@ class DisplayChat extends StatelessWidget {
 
 class MessageField extends StatelessWidget {
 
-  MessageField({super.key});
+  final sendMessage;
+
+  MessageField({required this.sendMessage,super.key});
 
   TextEditingController _messageText = TextEditingController();
 
 
-  void sendMessage(String message){
-    print("messageing ${message}");
+  void send(String message){
+    print("messaging ${message}");
+    sendMessage(message);
     _messageText.text = "";
   }
 
@@ -150,8 +167,7 @@ class MessageField extends StatelessWidget {
         ),
 
         IconButton(onPressed: (){
-            sendMessage(_messageText.text);
-            FocusScope.of(context).unfocus();
+            send(_messageText.text);
           }, 
           icon: Icon(Icons.send)
         )
