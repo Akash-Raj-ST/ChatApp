@@ -19,7 +19,9 @@
 
 // ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
+import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 
@@ -28,10 +30,9 @@ import 'package:flutter/foundation.dart';
 class Message extends Model {
   static const classType = const _MessageModelType();
   final String id;
-  final String? _message;
   final TemporalDateTime? _time;
-  final bool? _sender;
   final String? _contactID;
+  final List<Msg>? _messages;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -48,35 +49,9 @@ class Message extends Model {
       );
   }
   
-  String get message {
-    try {
-      return _message!;
-    } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
-  
   TemporalDateTime get time {
     try {
       return _time!;
-    } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
-  
-  bool get sender {
-    try {
-      return _sender!;
     } catch(e) {
       throw new AmplifyCodeGenModelException(
           AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -100,6 +75,10 @@ class Message extends Model {
     }
   }
   
+  List<Msg>? get messages {
+    return _messages;
+  }
+  
   TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -108,15 +87,14 @@ class Message extends Model {
     return _updatedAt;
   }
   
-  const Message._internal({required this.id, required message, required time, required sender, required contactID, createdAt, updatedAt}): _message = message, _time = time, _sender = sender, _contactID = contactID, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Message._internal({required this.id, required time, required contactID, messages, createdAt, updatedAt}): _time = time, _contactID = contactID, _messages = messages, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Message({String? id, required String message, required TemporalDateTime time, required bool sender, required String contactID}) {
+  factory Message({String? id, required TemporalDateTime time, required String contactID, List<Msg>? messages}) {
     return Message._internal(
       id: id == null ? UUID.getUUID() : id,
-      message: message,
       time: time,
-      sender: sender,
-      contactID: contactID);
+      contactID: contactID,
+      messages: messages != null ? List<Msg>.unmodifiable(messages) : messages);
   }
   
   bool equals(Object other) {
@@ -128,10 +106,9 @@ class Message extends Model {
     if (identical(other, this)) return true;
     return other is Message &&
       id == other.id &&
-      _message == other._message &&
       _time == other._time &&
-      _sender == other._sender &&
-      _contactID == other._contactID;
+      _contactID == other._contactID &&
+      DeepCollectionEquality().equals(_messages, other._messages);
   }
   
   @override
@@ -143,10 +120,9 @@ class Message extends Model {
     
     buffer.write("Message {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("message=" + "$_message" + ", ");
     buffer.write("time=" + (_time != null ? _time!.format() : "null") + ", ");
-    buffer.write("sender=" + (_sender != null ? _sender!.toString() : "null") + ", ");
     buffer.write("contactID=" + "$_contactID" + ", ");
+    buffer.write("messages=" + (_messages != null ? _messages!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -154,38 +130,40 @@ class Message extends Model {
     return buffer.toString();
   }
   
-  Message copyWith({String? message, TemporalDateTime? time, bool? sender, String? contactID}) {
+  Message copyWith({TemporalDateTime? time, String? contactID, List<Msg>? messages}) {
     return Message._internal(
       id: id,
-      message: message ?? this.message,
       time: time ?? this.time,
-      sender: sender ?? this.sender,
-      contactID: contactID ?? this.contactID);
+      contactID: contactID ?? this.contactID,
+      messages: messages ?? this.messages);
   }
   
   Message.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _message = json['message'],
       _time = json['time'] != null ? TemporalDateTime.fromString(json['time']) : null,
-      _sender = json['sender'],
       _contactID = json['contactID'],
+      _messages = json['messages'] is List
+        ? (json['messages'] as List)
+          .where((e) => e != null)
+          .map((e) => Msg.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
+          .toList()
+        : null,
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'message': _message, 'time': _time?.format(), 'sender': _sender, 'contactID': _contactID, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'time': _time?.format(), 'contactID': _contactID, 'messages': _messages?.map((Msg? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'id': id, 'message': _message, 'time': _time, 'sender': _sender, 'contactID': _contactID, 'createdAt': _createdAt, 'updatedAt': _updatedAt
+    'id': id, 'time': _time, 'contactID': _contactID, 'messages': _messages, 'createdAt': _createdAt, 'updatedAt': _updatedAt
   };
 
   static final QueryModelIdentifier<MessageModelIdentifier> MODEL_IDENTIFIER = QueryModelIdentifier<MessageModelIdentifier>();
   static final QueryField ID = QueryField(fieldName: "id");
-  static final QueryField MESSAGE = QueryField(fieldName: "message");
   static final QueryField TIME = QueryField(fieldName: "time");
-  static final QueryField SENDER = QueryField(fieldName: "sender");
   static final QueryField CONTACTID = QueryField(fieldName: "contactID");
+  static final QueryField MESSAGES = QueryField(fieldName: "messages");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Message";
     modelSchemaDefinition.pluralName = "Messages";
@@ -208,27 +186,22 @@ class Message extends Model {
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.MESSAGE,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: Message.TIME,
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.SENDER,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.bool)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: Message.CONTACTID,
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.embedded(
+      fieldName: 'messages',
+      isRequired: false,
+      isArray: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.embeddedCollection, ofCustomTypeName: 'Msg')
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(

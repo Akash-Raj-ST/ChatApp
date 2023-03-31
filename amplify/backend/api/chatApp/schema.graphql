@@ -1,3 +1,9 @@
+type Msg {
+  message: String
+  mine: Boolean
+  time: AWSDateTime
+}
+
 type Contact @model @auth(rules: [{allow: public}]) {
   id: ID!
   userID: ID! @index(name: "byUser")
@@ -7,10 +13,9 @@ type Contact @model @auth(rules: [{allow: public}]) {
 
 type Message @model @auth(rules: [{allow: public}]) {
   id: ID!
-  message: String!
   time: AWSDateTime!
-  sender: Boolean!
   contactID: ID! @index(name: "byContact")
+  messages: [Msg]
 }
 
 type User @model @auth(rules: [{allow: public}, {allow: private}]) {

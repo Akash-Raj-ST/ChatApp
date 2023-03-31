@@ -1,4 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
+import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -6,11 +9,13 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:chatapp/models/Contact.dart';
 import 'package:chatapp/models/Message.dart';
 
+import '../models/Msg.dart';
 import '../service/contact.dart';
+import '../service/message.dart';
 
 class LocalMessage {
   final String message;
-  final bool mine;
+  bool mine;
   final DateTime time;
 
   LocalMessage({
@@ -18,6 +23,55 @@ class LocalMessage {
     required this.mine,
     required this.time,
   });
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'message': message,
+      'mine': mine,
+      'time': time.millisecondsSinceEpoch,
+    };
+  }
+  
+
+  @override
+  String toString() => 'LocalMessage(message: $message, mine: $mine, time: $time)';
+
+  factory LocalMessage.fromMap(Map<String, dynamic> map) {
+    return LocalMessage(
+      message: map['message'] as String,
+      mine: map['mine'] as bool,
+      time: DateTime.fromMillisecondsSinceEpoch(map['time'] as int),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory LocalMessage.fromJson(String source) => LocalMessage.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  LocalMessage copyWith({
+    String? message,
+    bool? mine,
+    DateTime? time,
+  }) {
+    return LocalMessage(
+      message: message ?? this.message,
+      mine: mine ?? this.mine,
+      time: time ?? this.time,
+    );
+  }
+
+  @override
+  bool operator ==(covariant LocalMessage other) {
+    if (identical(this, other)) return true;
+  
+    return 
+      other.message == message &&
+      other.mine == mine &&
+      other.time == time;
+  }
+
+  @override
+  int get hashCode => message.hashCode ^ mine.hashCode ^ time.hashCode;
 }
 
 class Chat extends StatefulWidget {
@@ -31,20 +85,41 @@ class Chat extends StatefulWidget {
 }
 
 class _ChatState extends State<Chat> {
-  List<LocalMessage> messages = [];
+  List<Msg> messages = [];
+  late MessageService _messageService;
 
   @override
   initState(){
-    messages.add(LocalMessage(message: "Hi How are You?", mine: true, time: DateTime.now()));
-    messages.add(LocalMessage(message: "I am fine what about you?", mine: false, time: DateTime.now()));
-    messages.add(LocalMessage(message: "I am fine too", mine: true, time: DateTime.now()));
-    messages.add(LocalMessage(message: "What do we have to do for MGT J component????", mine: false, time: DateTime.now()));
+
+    _messageService = MessageService();
+    initialize();
+  
   }
 
-  void sendMessage(String message){
-    setState((){    
-     messages.add(LocalMessage(message: message, mine: true, time: DateTime.now()));
+  Future initialize() async{
+    await _messageService.init(contactDetail: widget.contact);
+
+    // messages.add(Msg(message: "Hi How are You?", mine: true, time: DateTime.now()));
+    // messages.add(Msg(message: "I am fine what about you?", mine: false, time: DateTime.now()));
+    // messages.add(Msg(message: "I am fine too", mine: true, time: DateTime.now()));
+    // messages.add(Msg(message: "What do we have to do for MGT J component????", mine: false, time: DateTime.now()));
+
+    List<Msg> allMessages = await _messageService.getMessages();
+    setState(() {
+      messages = allMessages;
     });
+  }
+
+  void sendMessage(String message) async{
+
+    Msg _localMessage = Msg(message: message, mine: true, time: TemporalDateTime(DateTime.now()));
+    
+
+    setState((){    
+      messages = [...messages,_localMessage];
+    });
+    print("another");
+    _messageService.sendMessage(message:_localMessage);
   }
 
   @override
@@ -86,7 +161,7 @@ class _ChatState extends State<Chat> {
 
 class DisplayChat extends StatelessWidget {
 
-  final List<LocalMessage> messages;
+  final List<Msg> messages;
 
   DisplayChat({
     Key? key,
@@ -106,14 +181,14 @@ class DisplayChat extends StatelessWidget {
           return Container(
             padding: EdgeInsets.only(left: 14,right: 14,top: 10,bottom: 10),
             child: Align(
-              alignment: (messages[messages.length-(1+index)].mine?Alignment.topRight:Alignment.topLeft),
+              alignment: (messages[messages.length-(1+index)].mine!?Alignment.topRight:Alignment.topLeft),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: (messages[messages.length-(1+index)].mine?Colors.blue[200]:Colors.grey.shade200),
+                  color: (messages[messages.length-(1+index)].mine!?Colors.blue[200]:Colors.grey.shade200),
                 ),
                 padding: EdgeInsets.all(16),
-                child: Text(messages[messages.length-(1+index)].message, style: TextStyle(fontSize: 15),),
+                child: Text(messages[messages.length-(1+index)].message!, style: TextStyle(fontSize: 15),),
               ),
             ),
           );
