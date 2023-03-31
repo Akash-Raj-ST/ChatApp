@@ -2,6 +2,7 @@
 
 import 'package:amplify_api/model_queries.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:chatapp/Home/AddContact.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -45,12 +46,21 @@ class Contacts extends StatelessWidget {
               return Column(
                 children: [
 
-                  ElevatedButton(
-                    onPressed: (){
-                      BlocProvider.of<ContactBloc>(context).add(AddContactEvent(email: "akashraj49070@gmail.com",user:user));
-                    }, 
-                    child: Text("Add Contact")
-                  ),
+                    IconButton(
+                      onPressed: (){
+                        showModalBottomSheet<void>(
+                          context: context,
+                          builder: (_) {
+                            return BlocProvider.value(
+                              value:  BlocProvider.of<ContactBloc>(context),
+                              child: AddContact(user: user,)
+                            );
+                          }
+                        );
+                      }, 
+                      icon: Icon(Icons.add_alarm_outlined),
+                    ),
+                  
                   
                   Expanded(
                     child: ListView.builder(
