@@ -15,7 +15,7 @@ class AuthenticationInitial extends AuthenticationState {
 
 class AuthenticationSuccessfulState extends AuthenticationState {
 
-  final AuthUser user;
+  final User user;
 
   const AuthenticationSuccessfulState({
     required this.user,

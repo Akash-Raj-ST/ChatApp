@@ -46,10 +46,12 @@ class RegisterEvent extends AuthenticationEvent {
 class OTPEvent extends AuthenticationEvent {
   final String username;
   final String OTP;
+  final String email;
 
   const OTPEvent({
     required this.username,
     required this.OTP,
+    required this.email,
   });
 
   @override

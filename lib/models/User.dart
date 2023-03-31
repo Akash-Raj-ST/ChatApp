@@ -19,19 +19,21 @@
 
 // ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
+import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 
-/** This is an auto generated class representing the Message type in your schema. */
+/** This is an auto generated class representing the User type in your schema. */
 @immutable
-class Message extends Model {
-  static const classType = const _MessageModelType();
+class User extends Model {
+  static const classType = const _UserModelType();
   final String id;
-  final String? _message;
-  final TemporalDateTime? _time;
-  final bool? _sender;
-  final String? _contactID;
+  final String? _username;
+  final String? _email;
+  final String? _dp;
+  final List<Contact>? _contacts;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -42,15 +44,15 @@ class Message extends Model {
   @override
   String getId() => id;
   
-  MessageModelIdentifier get modelIdentifier {
-      return MessageModelIdentifier(
+  UserModelIdentifier get modelIdentifier {
+      return UserModelIdentifier(
         id: id
       );
   }
   
-  String get message {
+  String get username {
     try {
-      return _message!;
+      return _username!;
     } catch(e) {
       throw new AmplifyCodeGenModelException(
           AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -61,9 +63,9 @@ class Message extends Model {
     }
   }
   
-  TemporalDateTime get time {
+  String get email {
     try {
-      return _time!;
+      return _email!;
     } catch(e) {
       throw new AmplifyCodeGenModelException(
           AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -74,30 +76,12 @@ class Message extends Model {
     }
   }
   
-  bool get sender {
-    try {
-      return _sender!;
-    } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
+  String? get dp {
+    return _dp;
   }
   
-  String get contactID {
-    try {
-      return _contactID!;
-    } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
+  List<Contact>? get contacts {
+    return _contacts;
   }
   
   TemporalDateTime? get createdAt {
@@ -108,15 +92,15 @@ class Message extends Model {
     return _updatedAt;
   }
   
-  const Message._internal({required this.id, required message, required time, required sender, required contactID, createdAt, updatedAt}): _message = message, _time = time, _sender = sender, _contactID = contactID, _createdAt = createdAt, _updatedAt = updatedAt;
+  const User._internal({required this.id, required username, required email, dp, contacts, createdAt, updatedAt}): _username = username, _email = email, _dp = dp, _contacts = contacts, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Message({String? id, required String message, required TemporalDateTime time, required bool sender, required String contactID}) {
-    return Message._internal(
+  factory User({String? id, required String username, required String email, String? dp, List<Contact>? contacts}) {
+    return User._internal(
       id: id == null ? UUID.getUUID() : id,
-      message: message,
-      time: time,
-      sender: sender,
-      contactID: contactID);
+      username: username,
+      email: email,
+      dp: dp,
+      contacts: contacts != null ? List<Contact>.unmodifiable(contacts) : contacts);
   }
   
   bool equals(Object other) {
@@ -126,12 +110,12 @@ class Message extends Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Message &&
+    return other is User &&
       id == other.id &&
-      _message == other._message &&
-      _time == other._time &&
-      _sender == other._sender &&
-      _contactID == other._contactID;
+      _username == other._username &&
+      _email == other._email &&
+      _dp == other._dp &&
+      DeepCollectionEquality().equals(_contacts, other._contacts);
   }
   
   @override
@@ -141,12 +125,11 @@ class Message extends Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Message {");
+    buffer.write("User {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("message=" + "$_message" + ", ");
-    buffer.write("time=" + (_time != null ? _time!.format() : "null") + ", ");
-    buffer.write("sender=" + (_sender != null ? _sender!.toString() : "null") + ", ");
-    buffer.write("contactID=" + "$_contactID" + ", ");
+    buffer.write("username=" + "$_username" + ", ");
+    buffer.write("email=" + "$_email" + ", ");
+    buffer.write("dp=" + "$_dp" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -154,41 +137,48 @@ class Message extends Model {
     return buffer.toString();
   }
   
-  Message copyWith({String? message, TemporalDateTime? time, bool? sender, String? contactID}) {
-    return Message._internal(
+  User copyWith({String? username, String? email, String? dp, List<Contact>? contacts}) {
+    return User._internal(
       id: id,
-      message: message ?? this.message,
-      time: time ?? this.time,
-      sender: sender ?? this.sender,
-      contactID: contactID ?? this.contactID);
+      username: username ?? this.username,
+      email: email ?? this.email,
+      dp: dp ?? this.dp,
+      contacts: contacts ?? this.contacts);
   }
   
-  Message.fromJson(Map<String, dynamic> json)  
+  User.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _message = json['message'],
-      _time = json['time'] != null ? TemporalDateTime.fromString(json['time']) : null,
-      _sender = json['sender'],
-      _contactID = json['contactID'],
+      _username = json['username'],
+      _email = json['email'],
+      _dp = json['dp'],
+      _contacts = json['contacts'] is List
+        ? (json['contacts'] as List)
+          .where((e) => e?['serializedData'] != null)
+          .map((e) => Contact.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
+          .toList()
+        : null,
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'message': _message, 'time': _time?.format(), 'sender': _sender, 'contactID': _contactID, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'username': _username, 'email': _email, 'dp': _dp, 'contacts': _contacts?.map((Contact? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'id': id, 'message': _message, 'time': _time, 'sender': _sender, 'contactID': _contactID, 'createdAt': _createdAt, 'updatedAt': _updatedAt
+    'id': id, 'username': _username, 'email': _email, 'dp': _dp, 'contacts': _contacts, 'createdAt': _createdAt, 'updatedAt': _updatedAt
   };
 
-  static final QueryModelIdentifier<MessageModelIdentifier> MODEL_IDENTIFIER = QueryModelIdentifier<MessageModelIdentifier>();
+  static final QueryModelIdentifier<UserModelIdentifier> MODEL_IDENTIFIER = QueryModelIdentifier<UserModelIdentifier>();
   static final QueryField ID = QueryField(fieldName: "id");
-  static final QueryField MESSAGE = QueryField(fieldName: "message");
-  static final QueryField TIME = QueryField(fieldName: "time");
-  static final QueryField SENDER = QueryField(fieldName: "sender");
-  static final QueryField CONTACTID = QueryField(fieldName: "contactID");
+  static final QueryField USERNAME = QueryField(fieldName: "username");
+  static final QueryField EMAIL = QueryField(fieldName: "email");
+  static final QueryField DP = QueryField(fieldName: "dp");
+  static final QueryField CONTACTS = QueryField(
+    fieldName: "contacts",
+    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: 'Contact'));
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Message";
-    modelSchemaDefinition.pluralName = "Messages";
+    modelSchemaDefinition.name = "User";
+    modelSchemaDefinition.pluralName = "Users";
     
     modelSchemaDefinition.authRules = [
       AuthRule(
@@ -198,37 +188,42 @@ class Message extends Model {
           ModelOperation.UPDATE,
           ModelOperation.DELETE,
           ModelOperation.READ
+        ]),
+      AuthRule(
+        authStrategy: AuthStrategy.PRIVATE,
+        operations: [
+          ModelOperation.CREATE,
+          ModelOperation.UPDATE,
+          ModelOperation.DELETE,
+          ModelOperation.READ
         ])
-    ];
-    
-    modelSchemaDefinition.indexes = [
-      ModelIndex(fields: const ["contactID"], name: "byContact")
     ];
     
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.MESSAGE,
+      key: User.USERNAME,
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.TIME,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.SENDER,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.bool)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.CONTACTID,
+      key: User.EMAIL,
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: User.DP,
+      isRequired: false,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
+      key: User.CONTACTS,
+      isRequired: false,
+      ofModelName: 'Contact',
+      associatedKey: Contact.USERID
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
@@ -247,30 +242,30 @@ class Message extends Model {
   });
 }
 
-class _MessageModelType extends ModelType<Message> {
-  const _MessageModelType();
+class _UserModelType extends ModelType<User> {
+  const _UserModelType();
   
   @override
-  Message fromJson(Map<String, dynamic> jsonData) {
-    return Message.fromJson(jsonData);
+  User fromJson(Map<String, dynamic> jsonData) {
+    return User.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'Message';
+    return 'User';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [Message] in your schema.
+ * of [User] in your schema.
  */
 @immutable
-class MessageModelIdentifier implements ModelIdentifier<Message> {
+class UserModelIdentifier implements ModelIdentifier<User> {
   final String id;
 
-  /** Create an instance of MessageModelIdentifier using [id] the primary key. */
-  const MessageModelIdentifier({
+  /** Create an instance of UserModelIdentifier using [id] the primary key. */
+  const UserModelIdentifier({
     required this.id});
   
   @override
@@ -288,7 +283,7 @@ class MessageModelIdentifier implements ModelIdentifier<Message> {
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'MessageModelIdentifier(id: $id)';
+  String toString() => 'UserModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -296,7 +291,7 @@ class MessageModelIdentifier implements ModelIdentifier<Message> {
       return true;
     }
     
-    return other is MessageModelIdentifier &&
+    return other is UserModelIdentifier &&
       id == other.id;
   }
   
