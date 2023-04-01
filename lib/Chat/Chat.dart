@@ -91,12 +91,13 @@ class _ChatState extends State<Chat> {
   @override
   initState(){
 
-    _messageService = MessageService();
     initialize();
   
   }
 
   Future initialize() async{
+    _messageService = MessageService();
+
     await _messageService.init(contactDetail: widget.contact);
 
     // messages.add(Msg(message: "Hi How are You?", mine: true, time: DateTime.now()));
@@ -106,7 +107,7 @@ class _ChatState extends State<Chat> {
 
     List<Msg> allMessages = await _messageService.getMessages();
     setState(() {
-      messages = allMessages;
+      messages = [...allMessages];
     });
   }
 
