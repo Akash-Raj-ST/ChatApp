@@ -27,27 +27,27 @@ import 'package:flutter/foundation.dart';
 @immutable
 class Msg {
   final String? _message;
-  final bool? _mine;
+  final String? _userID;
   final TemporalDateTime? _time;
 
   String? get message {
     return _message;
   }
   
-  bool? get mine {
-    return _mine;
+  String? get userID {
+    return _userID;
   }
   
   TemporalDateTime? get time {
     return _time;
   }
   
-  const Msg._internal({message, mine, time}): _message = message, _mine = mine, _time = time;
+  const Msg._internal({message, userID, time}): _message = message, _userID = userID, _time = time;
   
-  factory Msg({String? message, bool? mine, TemporalDateTime? time}) {
+  factory Msg({String? message, String? userID, TemporalDateTime? time}) {
     return Msg._internal(
       message: message,
-      mine: mine,
+      userID: userID,
       time: time);
   }
   
@@ -60,7 +60,7 @@ class Msg {
     if (identical(other, this)) return true;
     return other is Msg &&
       _message == other._message &&
-      _mine == other._mine &&
+      _userID == other._userID &&
       _time == other._time;
   }
   
@@ -73,31 +73,31 @@ class Msg {
     
     buffer.write("Msg {");
     buffer.write("message=" + "$_message" + ", ");
-    buffer.write("mine=" + (_mine != null ? _mine!.toString() : "null") + ", ");
+    buffer.write("userID=" + "$_userID" + ", ");
     buffer.write("time=" + (_time != null ? _time!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Msg copyWith({String? message, bool? mine, TemporalDateTime? time}) {
+  Msg copyWith({String? message, String? userID, TemporalDateTime? time}) {
     return Msg._internal(
       message: message ?? this.message,
-      mine: mine ?? this.mine,
+      userID: userID ?? this.userID,
       time: time ?? this.time);
   }
   
   Msg.fromJson(Map<String, dynamic> json)  
     : _message = json['message'],
-      _mine = json['mine'],
+      _userID = json['userID'],
       _time = json['time'] != null ? TemporalDateTime.fromString(json['time']) : null;
   
   Map<String, dynamic> toJson() => {
-    'message': _message, 'mine': _mine, 'time': _time?.format()
+    'message': _message, 'userID': _userID, 'time': _time?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'message': _message, 'mine': _mine, 'time': _time
+    'message': _message, 'userID': _userID, 'time': _time
   };
 
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
@@ -111,9 +111,9 @@ class Msg {
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(
-      fieldName: 'mine',
+      fieldName: 'userID',
       isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.bool)
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.customTypeField(

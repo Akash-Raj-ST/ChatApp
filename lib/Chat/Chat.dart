@@ -1,84 +1,29 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-import 'package:chatapp/models/Contact.dart';
 import 'package:chatapp/models/Message.dart';
 
 import '../models/Msg.dart';
+import '../models/User.dart';
 import '../service/contact.dart';
 import '../service/message.dart';
 
-class LocalMessage {
-  final String message;
-  bool mine;
-  final DateTime time;
-
-  LocalMessage({
-    required this.message,
-    required this.mine,
-    required this.time,
-  });
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'message': message,
-      'mine': mine,
-      'time': time.millisecondsSinceEpoch,
-    };
-  }
-  
-
-  @override
-  String toString() => 'LocalMessage(message: $message, mine: $mine, time: $time)';
-
-  factory LocalMessage.fromMap(Map<String, dynamic> map) {
-    return LocalMessage(
-      message: map['message'] as String,
-      mine: map['mine'] as bool,
-      time: DateTime.fromMillisecondsSinceEpoch(map['time'] as int),
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory LocalMessage.fromJson(String source) => LocalMessage.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  LocalMessage copyWith({
-    String? message,
-    bool? mine,
-    DateTime? time,
-  }) {
-    return LocalMessage(
-      message: message ?? this.message,
-      mine: mine ?? this.mine,
-      time: time ?? this.time,
-    );
-  }
-
-  @override
-  bool operator ==(covariant LocalMessage other) {
-    if (identical(this, other)) return true;
-  
-    return 
-      other.message == message &&
-      other.mine == mine &&
-      other.time == time;
-  }
-
-  @override
-  int get hashCode => message.hashCode ^ mine.hashCode ^ time.hashCode;
-}
 
 class Chat extends StatefulWidget {
-  final ContactDetail contact;
+  final User contact;
+  final User user;
   final int id;
 
-  Chat({required this.contact,required this.id,super.key});
+  Chat({required this.contact,required this.user,required this.id,super.key});
 
   @override
   State<Chat> createState() => _ChatState();
@@ -88,17 +33,19 @@ class _ChatState extends State<Chat> {
   List<Msg> messages = [];
   late MessageService _messageService;
 
+  StreamSubscription<GraphQLResponse<Message>>? subscription;
+
   @override
   initState(){
 
+    _messageService = MessageService();
     initialize();
-  
+    print("initialized");
   }
 
   Future initialize() async{
-    _messageService = MessageService();
 
-    await _messageService.init(contactDetail: widget.contact);
+    await _messageService.init(user: widget.user,contact: widget.contact);
 
     // messages.add(Msg(message: "Hi How are You?", mine: true, time: DateTime.now()));
     // messages.add(Msg(message: "I am fine what about you?", mine: false, time: DateTime.now()));
@@ -107,13 +54,102 @@ class _ChatState extends State<Chat> {
 
     List<Msg> allMessages = await _messageService.getMessages();
     setState(() {
-      messages = [...allMessages];
+      messages = allMessages;
+      print(messages);
     });
+
+    String user1 = widget.user.id;
+    String user2 = widget.contact.id; 
+
+    int res = user1.compareTo(user2);
+
+    if(res>0){
+      String temp = user1;
+      user1 = user2;
+      user2 = temp;
+    }
+
+    String chatID = user1+user2;
+
+    String messageID = _messageService.chatMessageObject?.id??"";
+    await subscribeByMessageID(messageID);
+  }
+
+  Future<void> subscribeByMessageID(String messageID) async {
+    const graphQLDocument = r'''
+        subscription MySubscription {
+          onUpdateMessage(filter: {id: {eq: "5156e203-25eb-4640-8618-b0392f0d1333"}}) {
+            messages {
+              message
+              time
+              userID
+            }
+          }
+        }
+      ''';
+    final Stream<GraphQLResponse<String>> operation = Amplify.API.subscribe(
+      GraphQLRequest<String>(
+        document: graphQLDocument, 
+        variables: <String, String>{'id': messageID},
+      ),
+      onEstablished: () => print('Subscription established'),
+    );
+
+    try {
+      await for (var event in operation) {
+        print('Subscription event data received: ${event.data}');
+        
+        if(event==null){
+          print("Event in null!!!");
+        }else{
+          var tagObjsJson = jsonDecode(event.data!)["onUpdateMessage"]["messages"] as List;
+          print("tags: $tagObjsJson");
+          
+          List<Msg> newMessages = tagObjsJson.map((tagJson) => Msg.fromJson(tagJson)).toList();
+
+          print("Formatted: $newMessages");
+          setState(() {
+            messages = newMessages;
+            print(messages);
+          });
+        }
+      }
+    } on Exception catch (e) {
+      print('Error in subscription stream: $e');
+    }
+  }
+
+
+  void subscribeByChatId(String chatID) {
+    Message? chatMessageObject = _messageService.getMessageObject();
+
+    if(chatMessageObject==null){
+      print("Cannot establish subsription because chatMessageObject in null");
+      return;
+    }
+
+    final subscriptionRequest = ModelSubscriptions.onUpdate(Message.classType);
+
+    final Stream<GraphQLResponse<Message>> operation = Amplify.API.subscribe(
+      subscriptionRequest,
+      onEstablished: () => print('Subscription established SUCCESSFULLY'),
+    );
+
+    subscription = operation.listen(
+      (event) {
+        print('Subscription event data received: ${event.data}');
+      },
+      onError: (Object e) => print('Error in subscription stream: $e'),
+    );
+  }
+
+  void unsubscribe() {
+    subscription?.cancel();
   }
 
   void sendMessage(String message) async{
 
-    Msg _localMessage = Msg(message: message, mine: true, time: TemporalDateTime(DateTime.now()));
+    Msg _localMessage = Msg(message: message, userID: widget.user.id, time: TemporalDateTime(DateTime.now()));
     
 
     setState((){    
@@ -128,7 +164,7 @@ class _ChatState extends State<Chat> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.contact.user.username),
+        title: Text(widget.contact.username),
         leading: Hero(
           tag: widget.id,
           child: Padding(
@@ -145,7 +181,7 @@ class _ChatState extends State<Chat> {
         children: [
       
           Expanded(
-            child: DisplayChat(messages:messages)
+            child: DisplayChat(messages:messages,user: widget.user,)
           ),
       
           SizedBox(
@@ -163,10 +199,12 @@ class _ChatState extends State<Chat> {
 class DisplayChat extends StatelessWidget {
 
   final List<Msg> messages;
+  final User user;
 
   DisplayChat({
     Key? key,
     required this.messages,
+    required this.user,
   }) : super(key: key);
 
   @override
@@ -182,11 +220,11 @@ class DisplayChat extends StatelessWidget {
           return Container(
             padding: EdgeInsets.only(left: 14,right: 14,top: 10,bottom: 10),
             child: Align(
-              alignment: (messages[messages.length-(1+index)].mine!?Alignment.topRight:Alignment.topLeft),
+              alignment: (messages[messages.length-(1+index)].userID==user.id?Alignment.topRight:Alignment.topLeft),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: (messages[messages.length-(1+index)].mine!?Colors.blue[200]:Colors.grey.shade200),
+                  color: (messages[messages.length-(1+index)].userID==user.id?Colors.blue[200]:Colors.grey.shade200),
                 ),
                 padding: EdgeInsets.all(16),
                 child: Text(messages[messages.length-(1+index)].message!, style: TextStyle(fontSize: 15),),

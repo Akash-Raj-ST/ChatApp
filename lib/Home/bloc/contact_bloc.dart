@@ -17,9 +17,9 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
     on<ContactInit>((event, emit) async{
       print("Getting contacts...");
 
-      List<ContactDetail> contactDetails = await _contactService.getContacts(user)??<ContactDetail>[];
-      print(contactDetails.length);
-      emit(ContactFetchedState(contactDetails: contactDetails));
+      List<User> contacts = await _contactService.getContacts(user)??<User>[];
+      print(contacts.length);
+      emit(ContactFetchedState(contacts: contacts));
       print("Getting contacts... Done");
 
     });

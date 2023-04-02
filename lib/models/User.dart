@@ -19,7 +19,6 @@
 
 // ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
-import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
@@ -33,7 +32,7 @@ class User extends Model {
   final String? _username;
   final String? _email;
   final String? _dp;
-  final List<Contact>? _contacts;
+  final List<String>? _contacts;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -80,7 +79,7 @@ class User extends Model {
     return _dp;
   }
   
-  List<Contact>? get contacts {
+  List<String>? get contacts {
     return _contacts;
   }
   
@@ -94,13 +93,13 @@ class User extends Model {
   
   const User._internal({required this.id, required username, required email, dp, contacts, createdAt, updatedAt}): _username = username, _email = email, _dp = dp, _contacts = contacts, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory User({String? id, required String username, required String email, String? dp, List<Contact>? contacts}) {
+  factory User({String? id, required String username, required String email, String? dp, List<String>? contacts}) {
     return User._internal(
       id: id == null ? UUID.getUUID() : id,
       username: username,
       email: email,
       dp: dp,
-      contacts: contacts != null ? List<Contact>.unmodifiable(contacts) : contacts);
+      contacts: contacts != null ? List<String>.unmodifiable(contacts) : contacts);
   }
   
   bool equals(Object other) {
@@ -130,6 +129,7 @@ class User extends Model {
     buffer.write("username=" + "$_username" + ", ");
     buffer.write("email=" + "$_email" + ", ");
     buffer.write("dp=" + "$_dp" + ", ");
+    buffer.write("contacts=" + (_contacts != null ? _contacts!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -137,7 +137,7 @@ class User extends Model {
     return buffer.toString();
   }
   
-  User copyWith({String? username, String? email, String? dp, List<Contact>? contacts}) {
+  User copyWith({String? username, String? email, String? dp, List<String>? contacts}) {
     return User._internal(
       id: id,
       username: username ?? this.username,
@@ -151,17 +151,12 @@ class User extends Model {
       _username = json['username'],
       _email = json['email'],
       _dp = json['dp'],
-      _contacts = json['contacts'] is List
-        ? (json['contacts'] as List)
-          .where((e) => e?['serializedData'] != null)
-          .map((e) => Contact.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
-          .toList()
-        : null,
+      _contacts = json['contacts']?.cast<String>(),
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'username': _username, 'email': _email, 'dp': _dp, 'contacts': _contacts?.map((Contact? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'username': _username, 'email': _email, 'dp': _dp, 'contacts': _contacts, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -173,9 +168,7 @@ class User extends Model {
   static final QueryField USERNAME = QueryField(fieldName: "username");
   static final QueryField EMAIL = QueryField(fieldName: "email");
   static final QueryField DP = QueryField(fieldName: "dp");
-  static final QueryField CONTACTS = QueryField(
-    fieldName: "contacts",
-    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: 'Contact'));
+  static final QueryField CONTACTS = QueryField(fieldName: "contacts");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "User";
     modelSchemaDefinition.pluralName = "Users";
@@ -219,11 +212,11 @@ class User extends Model {
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
       key: User.CONTACTS,
       isRequired: false,
-      ofModelName: 'Contact',
-      associatedKey: Contact.USERID
+      isArray: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.collection, ofModelName: describeEnum(ModelFieldTypeEnum.string))
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
