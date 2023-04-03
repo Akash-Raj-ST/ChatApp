@@ -30,8 +30,7 @@ import 'package:flutter/foundation.dart';
 class Message extends Model {
   static const classType = const _MessageModelType();
   final String id;
-  final TemporalDateTime? _time;
-  final String? _contactID;
+  final String? _chatID;
   final List<Msg>? _messages;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
@@ -49,30 +48,8 @@ class Message extends Model {
       );
   }
   
-  TemporalDateTime get time {
-    try {
-      return _time!;
-    } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
-  
-  String get contactID {
-    try {
-      return _contactID!;
-    } catch(e) {
-      throw new AmplifyCodeGenModelException(
-          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
+  String? get chatID {
+    return _chatID;
   }
   
   List<Msg>? get messages {
@@ -87,13 +64,12 @@ class Message extends Model {
     return _updatedAt;
   }
   
-  const Message._internal({required this.id, required time, required contactID, messages, createdAt, updatedAt}): _time = time, _contactID = contactID, _messages = messages, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Message._internal({required this.id, chatID, messages, createdAt, updatedAt}): _chatID = chatID, _messages = messages, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Message({String? id, required TemporalDateTime time, required String contactID, List<Msg>? messages}) {
+  factory Message({String? id, String? chatID, List<Msg>? messages}) {
     return Message._internal(
       id: id == null ? UUID.getUUID() : id,
-      time: time,
-      contactID: contactID,
+      chatID: chatID,
       messages: messages != null ? List<Msg>.unmodifiable(messages) : messages);
   }
   
@@ -106,8 +82,7 @@ class Message extends Model {
     if (identical(other, this)) return true;
     return other is Message &&
       id == other.id &&
-      _time == other._time &&
-      _contactID == other._contactID &&
+      _chatID == other._chatID &&
       DeepCollectionEquality().equals(_messages, other._messages);
   }
   
@@ -120,8 +95,7 @@ class Message extends Model {
     
     buffer.write("Message {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("time=" + (_time != null ? _time!.format() : "null") + ", ");
-    buffer.write("contactID=" + "$_contactID" + ", ");
+    buffer.write("chatID=" + "$_chatID" + ", ");
     buffer.write("messages=" + (_messages != null ? _messages!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
@@ -130,18 +104,16 @@ class Message extends Model {
     return buffer.toString();
   }
   
-  Message copyWith({TemporalDateTime? time, String? contactID, List<Msg>? messages}) {
+  Message copyWith({String? chatID, List<Msg>? messages}) {
     return Message._internal(
       id: id,
-      time: time ?? this.time,
-      contactID: contactID ?? this.contactID,
+      chatID: chatID ?? this.chatID,
       messages: messages ?? this.messages);
   }
   
   Message.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _time = json['time'] != null ? TemporalDateTime.fromString(json['time']) : null,
-      _contactID = json['contactID'],
+      _chatID = json['chatID'],
       _messages = json['messages'] is List
         ? (json['messages'] as List)
           .where((e) => e != null)
@@ -152,17 +124,16 @@ class Message extends Model {
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'time': _time?.format(), 'contactID': _contactID, 'messages': _messages?.map((Msg? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'chatID': _chatID, 'messages': _messages?.map((Msg? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'id': id, 'time': _time, 'contactID': _contactID, 'messages': _messages, 'createdAt': _createdAt, 'updatedAt': _updatedAt
+    'id': id, 'chatID': _chatID, 'messages': _messages, 'createdAt': _createdAt, 'updatedAt': _updatedAt
   };
 
   static final QueryModelIdentifier<MessageModelIdentifier> MODEL_IDENTIFIER = QueryModelIdentifier<MessageModelIdentifier>();
   static final QueryField ID = QueryField(fieldName: "id");
-  static final QueryField TIME = QueryField(fieldName: "time");
-  static final QueryField CONTACTID = QueryField(fieldName: "contactID");
+  static final QueryField CHATID = QueryField(fieldName: "chatID");
   static final QueryField MESSAGES = QueryField(fieldName: "messages");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Message";
@@ -179,21 +150,11 @@ class Message extends Model {
         ])
     ];
     
-    modelSchemaDefinition.indexes = [
-      ModelIndex(fields: const ["contactID"], name: "byContact")
-    ];
-    
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.TIME,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Message.CONTACTID,
-      isRequired: true,
+      key: Message.CHATID,
+      isRequired: false,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
     

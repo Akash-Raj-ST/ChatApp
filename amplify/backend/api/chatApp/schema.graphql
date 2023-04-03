@@ -1,20 +1,12 @@
 type Msg {
   message: String
-  mine: Boolean
+  userID: ID
   time: AWSDateTime
-}
-
-type Contact @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  userID: ID! @index(name: "byUser")
-  messages: [Message] @hasMany(indexName: "byContact", fields: ["id"])
-  contactUserID: ID
 }
 
 type Message @model @auth(rules: [{allow: public}]) {
   id: ID!
-  time: AWSDateTime!
-  contactID: ID! @index(name: "byContact")
+  chatID: String
   messages: [Msg]
 }
 
@@ -23,6 +15,6 @@ type User @model @auth(rules: [{allow: public}, {allow: private}]) {
   username: String!
   email: AWSEmail!
   dp: String
-  contacts: [Contact] @hasMany(indexName: "byUser", fields: ["id"])
+  contacts: [ID]
 }
  

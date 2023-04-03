@@ -10,7 +10,6 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../Chat/Chat.dart';
-import '../models/Contact.dart';
 import '../models/ModelProvider.dart';
 import '../service/contact.dart';
 import 'bloc/contact_bloc.dart';
@@ -64,9 +63,9 @@ class Contacts extends StatelessWidget {
                   
                   Expanded(
                     child: ListView.builder(
-                        itemCount: state.contactDetails.length,
+                        itemCount: state.contacts.length,
                         itemBuilder: (context, index) {
-                          return ContactItem(contact: state.contactDetails[index], index: index);
+                          return ContactItem(contact: state.contacts[index],user:user, index: index);
                         }
                     ),
                   ),
@@ -83,10 +82,11 @@ class Contacts extends StatelessWidget {
 }
 
 class ContactItem extends StatelessWidget {
-  final ContactDetail contact;
+  final User contact;
+  final User user;
   final int index;
 
-  const ContactItem({required this.contact, required this.index, super.key});
+  const ContactItem({required this.contact,required this.user, required this.index, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +96,7 @@ class ContactItem extends StatelessWidget {
         onTap: () {
           Navigator.of(context)
               .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-            return Chat(contact: contact, id: index);
+            return Chat(contact: contact,user:user,id: index);
           }));
         },
         child: ListTile(
@@ -108,7 +108,7 @@ class ContactItem extends StatelessWidget {
             ),
           ),
           title: Text(
-            contact.user.username,
+            contact.username,
             style: TextStyle(
               fontWeight: FontWeight.bold,
             ),

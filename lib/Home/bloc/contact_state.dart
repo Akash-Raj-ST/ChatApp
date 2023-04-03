@@ -13,10 +13,10 @@ class ContactInitial extends ContactState {
 }
 
 class ContactFetchedState extends ContactState {
-  final List<ContactDetail> contactDetails;
+  final List<User> contacts;
 
   ContactFetchedState({
-    required this.contactDetails,
+    required this.contacts,
   });
 
   @override
