@@ -48,3 +48,21 @@ class SignOutFailedState extends AuthenticationState {
   @override
   List<Object> get props => [];
 }
+
+class LoadingState extends AuthenticationState {
+
+  final String loadingMsg;
+  
+  LoadingState({
+    required this.loadingMsg,
+  });
+
+  @override
+  List<Object> get props => [];
+}
+
+class GoToLoginState extends AuthenticationState {
+
+  @override
+  List<Object> get props => [];
+}
