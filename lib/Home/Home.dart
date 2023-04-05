@@ -39,47 +39,66 @@ class HomePage extends StatelessWidget {
           if(state is LoadingState){
             return Loading(state.loadingMsg);
           }
-          return Scaffold(
-            appBar: AppBar(
-              title: Text("ChitChat ${user.username}!"),
-              automaticallyImplyLeading: false,
-              actions:<Widget> [
-                GestureDetector(
-                  onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder:(_)=>BlocProvider.value(
-                              value: BlocProvider.of<AuthenticationBloc>(context),
-                              child: Profile(user: user),
-                          )
-                        )
-                      );
-                  
-                  },
-                  child: Hero(
-                    tag: "ProfilePic",
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage("https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")
+          return SafeArea(
+            child: Scaffold(
+              
+              body: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Stack(
+                      children: [
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text("Messages",
+                                style: TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue[500]
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+          
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: GestureDetector(
+                              onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder:(_)=>BlocProvider.value(
+                                          value: BlocProvider.of<AuthenticationBloc>(context),
+                                          child: Profile(user: user),
+                                      )
+                                    )
+                                  );
+                              
+                              },
+                              child: Hero(
+                                tag: "ProfilePic",
+                                child: CircleAvatar(
+                                  backgroundImage: NetworkImage("https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
-            
+                  
+                  Expanded(
+                    child: Contacts(user:user)
+                  )
+                ]
+              ),
+          
             ),
-            body: Column(
-              children: [
-                SearchBar(),
-
-                SizedBox(
-                  height: 20,
-                ),
-                
-                Expanded(
-                  child: Contacts(user:user)
-                )
-              ]
-            ),
-
           );
         },
       );

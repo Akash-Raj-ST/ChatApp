@@ -3,20 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class SearchBar extends StatefulWidget {
-  const SearchBar({super.key});
+class SearchBar extends StatelessWidget {
+  final handler;
+  final TextEditingController searchQuery;
+
+  SearchBar({required this.handler,required this.searchQuery,super.key});
 
   @override
-  State<SearchBar> createState() => _SearchBarState();
-}
-
-class _SearchBarState extends State<SearchBar> {
-
-  TextEditingController _searchQuery = TextEditingController();
-
-
-  void search(String query){
-    print("Querying ${query}");
+  initState(){
+    print("Search bar...");
   }
 
   @override
@@ -24,9 +19,9 @@ class _SearchBarState extends State<SearchBar> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
       child: TextField(
-        controller: _searchQuery,
+        controller: searchQuery,
         onChanged: (value) {
-          search(_searchQuery.text);
+          handler();
         },
 
         style: TextStyle(
@@ -34,6 +29,12 @@ class _SearchBarState extends State<SearchBar> {
           decorationThickness: 0
         ),
         decoration: InputDecoration(
+          enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.blue,
+                      width: 2,
+                    )
+                  ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
           ),
