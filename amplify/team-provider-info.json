@@ -16,10 +16,17 @@
         "chatApp": {}
       },
       "function": {
-        "DP": {}
+        "DP": {},
+        "profilePic": {
+          "deploymentBucketName": "amplify-chatapp-staging-174414-deployment",
+          "s3Key": "amplify-builds/profilePic-2f36317742544e656649-build.zip"
+        }
       },
       "storage": {
         "s3chatappstoragebf25c17b": {}
+      },
+      "api": {
+        "chatApp": {}
       }
     }
   }

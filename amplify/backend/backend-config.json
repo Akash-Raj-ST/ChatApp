@@ -63,6 +63,31 @@
       "service": "Cognito"
     }
   },
+  "function": {
+    "profilePic": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_profilePic_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "profilePic"
+        }
+      ]
+    },
+    "AMPLIFY_function_profilePic_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "profilePic"
+        }
+      ]
+    }
+  },
   "storage": {
     "s3chatappstoragebf25c17b": {
       "dependsOn": [],

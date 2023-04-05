@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
       child: const MaterialApp(
         title: 'Flutter Demo',
         home: Authentication(),
+        debugShowCheckedModeBanner: false,
       ),
     );
   }

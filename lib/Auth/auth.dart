@@ -25,10 +25,6 @@ class Authentication extends StatelessWidget {
 
           if(state is AuthenticationSuccessfulState){
             print("Login success state");
-          }
-        },
-        builder:(context, state){
-          if(state is AuthenticationSuccessfulState){ 
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -41,12 +37,14 @@ class Authentication extends StatelessWidget {
             }
             );
           }
+        },
+        builder:(context, state){
 
           return Scaffold(
-                appBar: AppBar(
-                  title: const Text("Chat App"),
+                
+                body: SafeArea(
+                  child: const AuthenticationPage()
                 ),
-                body: const AuthenticationPage(),
               );
           
         } 
@@ -65,40 +63,8 @@ class AuthenticationPage extends StatefulWidget {
 
 class _AuthenticationPageState extends State<AuthenticationPage> {
 
-  
-
-  String currTab = "Login";
-
-  void changeTab(String clickedTab){
-    setState(() {
-      currTab = clickedTab;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-          showOptions(currTab,changeTab),
-
-          currTab=="Login"?const LoginPage():const RegisterPage(),
-      ],
-    );
+    return const LoginPage();
   }
-}
-
-
-Widget showOptions(currTab,changeTab){
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      TabButton("Login", currTab, changeTab),
-
-      const SizedBox(
-        width: 10,
-      ),
-
-      TabButton("Register", currTab, changeTab),
-    ],
-  );
 }

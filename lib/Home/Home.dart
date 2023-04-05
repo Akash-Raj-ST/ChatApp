@@ -4,6 +4,7 @@ import 'package:chatapp/Auth/bloc/authentication_bloc.dart';
 import 'package:chatapp/Home/Contacts.dart';
 import 'package:chatapp/Home/SearchBar.dart';
 import 'package:chatapp/Profile/Profile.dart';
+import 'package:chatapp/components/Loading.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
@@ -35,6 +36,9 @@ class HomePage extends StatelessWidget {
           
         },
         builder: (context, state) {
+          if(state is LoadingState){
+            return Loading(state.loadingMsg);
+          }
           return Scaffold(
             appBar: AppBar(
               title: Text("ChitChat ${user.username}!"),
