@@ -94,7 +94,7 @@ class AuthenticationService{
 
       if(result.isSignUpComplete){
         try {
-          final user = User(username: username, dp: "${username}dp", email: email,contacts: <String>[]);
+          final user = User(username: username, dp: "dp/$username.jpg", email: email,contacts: <String>[]);
           final request = ModelMutations.create(user);
           final response = await Amplify.API.mutate(request: request).response;
 
