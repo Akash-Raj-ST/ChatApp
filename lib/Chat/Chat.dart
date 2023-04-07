@@ -22,8 +22,9 @@ class Chat extends StatefulWidget {
   final User contact;
   final User user;
   final int id;
+  final String dp;
 
-  Chat({required this.contact,required this.user,required this.id,super.key});
+  Chat({required this.contact,required this.user,required this.dp,required this.id,super.key});
 
   @override
   State<Chat> createState() => _ChatState();
@@ -170,7 +171,7 @@ class _ChatState extends State<Chat> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
-              backgroundImage: NetworkImage("https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")
+              backgroundImage: NetworkImage(widget.dp)
             ),
           )
         ),

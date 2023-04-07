@@ -178,7 +178,7 @@ class _ContactItemState extends State<ContactItem> {
         onTap: () {
           Navigator.of(context)
               .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-            return Chat(contact: widget.contact,user:widget.user,id: widget.index);
+            return Chat(contact: widget.contact,user:widget.user,id: widget.index,dp: dpURL);
           }));
         },
         child: ListTile(
