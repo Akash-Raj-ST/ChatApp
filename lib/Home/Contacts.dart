@@ -3,6 +3,7 @@
 import 'package:amplify_api/model_queries.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:chatapp/Home/AddContact.dart';
+import 'package:chatapp/Profile/manageDP.dart';
 import 'package:chatapp/components/Loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -134,12 +135,40 @@ class _ContactsState extends State<Contacts> {
   }
 }
 
-class ContactItem extends StatelessWidget {
+class ContactItem extends StatefulWidget {
   final User contact;
   final User user;
   final int index;
 
   const ContactItem({required this.contact,required this.user, required this.index, super.key});
+
+  @override
+  State<ContactItem> createState() => _ContactItemState();
+}
+
+class _ContactItemState extends State<ContactItem> {
+
+  String dpURL = "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
+  
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setDP();
+  }
+
+  Future setDP() async{
+    String dpUrl = await getDownloadUrl(widget.contact.id);
+
+    if(dpUrl==""){
+      print("${widget.contact.username} has not set dp");
+      return;
+    }
+    setState(() {
+      print("Setting url for contacts page");
+      dpURL = dpUrl;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,28 +178,29 @@ class ContactItem extends StatelessWidget {
         onTap: () {
           Navigator.of(context)
               .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-            return Chat(contact: contact,user:user,id: index);
+            return Chat(contact: widget.contact,user:widget.user,id: widget.index);
           }));
         },
         child: ListTile(
           leading: Hero(
-            tag: index,
+            tag: widget.index,
             child: CircleAvatar(
               backgroundImage: NetworkImage(
-                  "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"),
+                  dpURL
+                ),
                 radius: 26,
               ),
             
           ),
           title: Text(
-            contact.username,
+            widget.contact.username,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
           ),
           subtitle: Text(
-            contact.email,
+            widget.contact.email,
             style: TextStyle(
               // color: contact.status == 0 ? Colors.red[200] : Colors.green[200],
             ),

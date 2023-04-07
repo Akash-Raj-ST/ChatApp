@@ -11,13 +11,42 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../Profile/manageDP.dart';
 import '../models/User.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
 
   final User user;
 
   const HomePage({super.key, required this.user});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  String dpURL = "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
+  
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setDP();
+  }
+
+  Future setDP() async{
+    String dpUrl = await getDownloadUrl(widget.user.id);
+
+    if(dpUrl==""){
+      print("${widget.user.username} has not set dp");
+      return;
+    }
+    setState(() {
+      print("Setting url for contacts page");
+      dpURL = dpUrl;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +102,7 @@ class HomePage extends StatelessWidget {
                                     MaterialPageRoute(
                                       builder:(_)=>BlocProvider.value(
                                           value: BlocProvider.of<AuthenticationBloc>(context),
-                                          child: Profile(user: user),
+                                          child: Profile(user: widget.user),
                                       )
                                     )
                                   );
@@ -82,7 +111,7 @@ class HomePage extends StatelessWidget {
                               child: Hero(
                                 tag: "ProfilePic",
                                 child: CircleAvatar(
-                                  backgroundImage: NetworkImage("https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")
+                                  backgroundImage: NetworkImage(dpURL)
                                 ),
                               ),
                             ),
@@ -93,7 +122,7 @@ class HomePage extends StatelessWidget {
                   ),
                   
                   Expanded(
-                    child: Contacts(user:user)
+                    child: Contacts(user:widget.user)
                   )
                 ]
               ),

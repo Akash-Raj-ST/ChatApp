@@ -4,7 +4,7 @@
 import 'package:amplify_api/model_mutations.dart';
 import 'package:amplify_api/model_queries.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:chatapp/Profile/uploadDP.dart';
+import 'package:chatapp/Profile/manageDP.dart';
 
 import 'package:chatapp/models/Message.dart';
 
