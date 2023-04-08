@@ -39,11 +39,9 @@ class _HomePageState extends State<HomePage> {
     String dpUrl = await getDownloadUrl(widget.user.id);
 
     if(dpUrl==""){
-      print("${widget.user.username} has not set dp");
       return;
     }
     setState(() {
-      print("Setting url for contacts page");
       dpURL = dpUrl;
     });
   }

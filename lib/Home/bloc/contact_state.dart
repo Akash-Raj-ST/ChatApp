@@ -24,7 +24,12 @@ class ContactFetchedState extends ContactState {
 }
 
 class AddContactSuccessState extends ContactState {
+  final User newContact;
 
+  AddContactSuccessState({
+    required this.newContact,
+  });
+  
   @override
   List<Object> get props => [];
 }

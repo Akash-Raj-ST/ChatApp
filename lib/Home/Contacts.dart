@@ -38,7 +38,6 @@ class _ContactsState extends State<Contacts> {
   void filterContactHandler(){
     String query = _searchQuery.text;
     
-    print("query $query");
     if(query.length==0){
       setState(() {
         filteredContacts = contacts;
@@ -75,8 +74,18 @@ class _ContactsState extends State<Contacts> {
           listener: (context, state) {
             if(state is ContactFetchedState){
               setState(() {
+                print("Updating contacts....");
+                print(state.contacts);
+
                 contacts = state.contacts;
                 filteredContacts = state.contacts;
+              });
+            }
+
+            if(state is AddContactSuccessState){
+              setState(() {
+                contacts = [...contacts,state.newContact];
+                filteredContacts = contacts;
               });
             }
           },
@@ -113,7 +122,7 @@ class _ContactsState extends State<Contacts> {
                       ),
                     ),
                   
-                  state is ContactFetchedState?
+                  state is ContactFetchedState || state is AddContactSuccessState?
                   
                   Expanded(
                     child: ListView.builder(
@@ -161,11 +170,9 @@ class _ContactItemState extends State<ContactItem> {
     String dpUrl = await getDownloadUrl(widget.contact.id);
 
     if(dpUrl==""){
-      print("${widget.contact.username} has not set dp");
       return;
     }
     setState(() {
-      print("Setting url for contacts page");
       dpURL = dpUrl;
     });
   }

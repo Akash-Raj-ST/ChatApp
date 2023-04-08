@@ -25,7 +25,7 @@ class ContactService{
 
       try {
 
-        final userWithNewContact = user.copyWith(contacts: [...user.contacts!,contactID]);
+        final userWithNewContact = user.copyWith(contacts: [contactID]);
         final request = ModelMutations.update(userWithNewContact);
         final response = await Amplify.API.mutate(request: request).response;
         print('Response: $response');
@@ -191,6 +191,22 @@ class ContactService{
       
     return contacts;
 
+  }
+
+  Future getSingleContact(email) async{
+      final queryPredicate = User.EMAIL.eq(email);
+
+      final request = ModelQueries.list<User>(User.classType, where: queryPredicate);
+      final response = await Amplify.API.query(request: request).response;
+
+      final contactsResponse = response.data;
+
+      if (contactsResponse== null) {
+          print('errors: ${response.errors}');
+          return;
+      }
+
+      return contactsResponse.items.first!;
   }
 
 }

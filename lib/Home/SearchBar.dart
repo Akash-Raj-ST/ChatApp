@@ -10,11 +10,6 @@ class SearchBar extends StatelessWidget {
   SearchBar({required this.handler,required this.searchQuery,super.key});
 
   @override
-  initState(){
-    print("Search bar...");
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),

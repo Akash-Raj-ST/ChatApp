@@ -15,12 +15,11 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
   ContactBloc(this._contactService,this.user) : super(ContactInitial()) {
 
     on<ContactInit>((event, emit) async{
-      print("Getting contacts...");
 
       List<User> contacts = await _contactService.getContacts(user)??<User>[];
       print(contacts.length);
+      print("Fetched contacts $contacts");
       emit(ContactFetchedState(contacts: contacts));
-      print("Getting contacts... Done");
 
     });
 
@@ -29,11 +28,11 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
       bool result = await _contactService.addContact(event.email,event.user);
 
       if(result){
-        emit(AddContactSuccessState());
+        User newContact = await _contactService.getSingleContact(event.email);
+        emit(AddContactSuccessState(newContact:newContact));
       }else{
         emit(AddContactFailedState());
       }
-      add(ContactInit());
     });
 
   }
