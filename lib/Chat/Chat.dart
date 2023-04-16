@@ -41,7 +41,6 @@ class _ChatState extends State<Chat> {
 
     _messageService = MessageService();
     initialize();
-    print("initialized");
   }
 
   Future initialize() async{
@@ -56,7 +55,6 @@ class _ChatState extends State<Chat> {
     List<Msg> allMessages = await _messageService.getMessages();
     setState(() {
       messages = allMessages;
-      print(messages);
     });
 
     String user1 = widget.user.id;
@@ -73,13 +71,14 @@ class _ChatState extends State<Chat> {
     String chatID = user1+user2;
 
     String messageID = _messageService.chatMessageObject?.id??"";
+    print("messade ID $messageID");
     await subscribeByMessageID(messageID);
   }
 
   Future<void> subscribeByMessageID(String messageID) async {
-    const graphQLDocument = r'''
+    var graphQLDocument = '''
         subscription MySubscription {
-          onUpdateMessage(filter: {id: {eq: "5156e203-25eb-4640-8618-b0392f0d1333"}}) {
+          onUpdateMessage(filter: {id: {eq: "$messageID"}}) {
             messages {
               message
               time
@@ -88,10 +87,10 @@ class _ChatState extends State<Chat> {
           }
         }
       ''';
+
     final Stream<GraphQLResponse<String>> operation = Amplify.API.subscribe(
       GraphQLRequest<String>(
         document: graphQLDocument, 
-        variables: <String, String>{'id': messageID},
       ),
       onEstablished: () => print('Subscription established'),
     );
@@ -104,44 +103,19 @@ class _ChatState extends State<Chat> {
           print("Event in null!!!");
         }else{
           var tagObjsJson = jsonDecode(event.data!)["onUpdateMessage"]["messages"] as List;
-          print("tags: $tagObjsJson");
           
           List<Msg> newMessages = tagObjsJson.map((tagJson) => Msg.fromJson(tagJson)).toList();
 
-          print("Formatted: $newMessages");
+          // print("Formatted: $newMessages");
+
           setState(() {
             messages = newMessages;
-            print(messages);
           });
         }
       }
     } on Exception catch (e) {
       print('Error in subscription stream: $e');
     }
-  }
-
-
-  void subscribeByChatId(String chatID) {
-    Message? chatMessageObject = _messageService.getMessageObject();
-
-    if(chatMessageObject==null){
-      print("Cannot establish subsription because chatMessageObject in null");
-      return;
-    }
-
-    final subscriptionRequest = ModelSubscriptions.onUpdate(Message.classType);
-
-    final Stream<GraphQLResponse<Message>> operation = Amplify.API.subscribe(
-      subscriptionRequest,
-      onEstablished: () => print('Subscription established SUCCESSFULLY'),
-    );
-
-    subscription = operation.listen(
-      (event) {
-        print('Subscription event data received: ${event.data}');
-      },
-      onError: (Object e) => print('Error in subscription stream: $e'),
-    );
   }
 
   void unsubscribe() {
@@ -156,7 +130,7 @@ class _ChatState extends State<Chat> {
     setState((){    
       messages = [...messages,_localMessage];
     });
-    print("another");
+
     _messageService.sendMessage(message:_localMessage);
   }
 
@@ -249,7 +223,6 @@ class MessageField extends StatelessWidget {
 
 
   void send(String message){
-    print("messaging ${message}");
     sendMessage(message);
     _messageText.text = "";
   }
